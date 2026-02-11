@@ -1,0 +1,25 @@
+"# Собирает данные о небоскрёбах: высота, количество этажей, страна, город, год постройки, архитектор.
+# Collects data about skyscrapers: height, number of floors, country, city, year of construction, architect.
+
+SELECT DISTINCT
+  ?skyscraper ?skyscraperLabel
+  ?height ?floors
+  ?countryLabel ?cityLabel
+  ?year ?architectLabel
+WHERE {
+  ?skyscraper wdt:P31/wdt:P279* wd:Q11303.  # Все небоскрёбы (включая подклассы) / All skyscrapers (including subclasses)
+
+  # Основные свойства / Main properties
+  OPTIONAL { ?skyscraper wdt:P2048 ?height. }  # Высота / Height
+  OPTIONAL { ?skyscraper wdt:P1101 ?floors. }  # Количество этажей / Number of floors
+  OPTIONAL { ?skyscraper wdt:P17 ?country. }  # Страна / Country
+  OPTIONAL { ?skyscraper wdt:P131 ?city. }  # Город / City
+  OPTIONAL { ?skyscraper wdt:P571 ?year. }  # Год постройки / Year of construction
+  OPTIONAL { ?skyscraper wdt:P84 ?architect. }  # Архитектор / Architect
+
+  # Метки на русском, если нет — на английском / Labels in Russian, if not available — in English
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language ""ru,en"".
+  }
+}
+LIMIT 1000"
