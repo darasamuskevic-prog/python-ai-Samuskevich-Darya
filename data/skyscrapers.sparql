@@ -1,0 +1,32 @@
+# Собирает данные о небоскрёбах высотой более 200 метров, построенных после 1950 года: высота, количество этажей, страна, город, год постройки, архитектор.
+# Collects data about skyscrapers taller than 200 meters, built after 1950: height, number of floors, country, city, year of construction, architect.
+
+SELECT DISTINCT
+  ?skyscraper ?skyscraperLabel
+  ?height ?floors
+  ?countryLabel ?cityLabel
+  (YEAR(?year) AS ?constructionYear)  # Извлекает только год
+  ?architectLabel
+WHERE {
+  ?skyscraper wdt:P31/wdt:P279* wd:Q11303.  # Все небоскрёбы (включая подклассы)
+
+  # Основные свойства
+  ?skyscraper wdt:P2048 ?height.  # Высота (обязательное поле)
+  ?skyscraper wdt:P571 ?year.     # Год постройки (обязательное поле)
+
+  # Фильтры
+  FILTER(?height > 200)  # Только небоскрёбы выше 200 метров
+  FILTER(YEAR(?year) > 1950)  # Только построенные после 1950 года
+
+  # Дополнительные свойства
+  OPTIONAL { ?skyscraper wdt:P1101 ?floors. }  # Количество этажей
+  OPTIONAL { ?skyscraper wdt:P17 ?country. }  # Страна
+  OPTIONAL { ?skyscraper wdt:P131 ?city. }  # Город
+  OPTIONAL { ?skyscraper wdt:P84 ?architect. }  # Архитектор
+
+  # Метки на русском, если нет — на английском
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language "ru,en".
+  }
+}
+ORDER BY DESC(?height)  # Сортировка по убыванию высоты
